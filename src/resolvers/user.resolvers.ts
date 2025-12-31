@@ -1,6 +1,9 @@
+import pubsub from "../utils/pubsub.ts"
+
 const users = [
   { id: "1", name: "D", lastname: "M" },
-  { id: "2", name: "P", lastname: "R" }
+  { id: "2", name: "P", lastname: "R" },
+  { id: "3", name: "E", lastname: "J" }
 ];
 
 const resolvers = {
@@ -8,10 +11,12 @@ const resolvers = {
     user: (_: any, args: { id: string; }) => users.find((u) => u.id === args.id),
     users: () => users
   },
+
   Mutation: {
     createUser: (_: any, { input }: any) => {
       const newUser = input;
       users.push(newUser);
+      pubsub.publish("USER_CREATED", { userCreated: newUser })
 
       return newUser;
     },
@@ -38,6 +43,12 @@ const resolvers = {
         return true;
       }
       throw new Error("Element not found");
+    }
+  },
+
+  Subscription: {
+    userCreated: {
+      subscribe: () => pubsub.asyncIterableIterator("USER_CREATED")
     }
   }
 }

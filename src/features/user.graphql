@@ -5,8 +5,8 @@ type User {
 }
 
 type Query {
-  user(id: ID!): User
-  users: [User]
+  user(id: ID!): User!
+  users: [User]!
 }
 
 input UserMutation {
@@ -16,7 +16,11 @@ input UserMutation {
 }
 
 type Mutation {
-  createUser(input: UserMutation!): User
-  updateUser(input: UserMutation!): User
-  deleteUser(id: ID!): Boolean
+  createUser(input: UserMutation!): User!
+  updateUser(input: UserMutation!): User!
+  deleteUser(id: ID!): Boolean!
+}
+
+type Subscription {
+  userCreated: User!
 }
