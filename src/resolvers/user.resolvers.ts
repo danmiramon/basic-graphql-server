@@ -1,48 +1,54 @@
-import pubsub from "../utils/pubsub.ts"
-
-const users = [
-  { id: "1", name: "D", lastname: "M" },
-  { id: "2", name: "P", lastname: "R" },
-  { id: "3", name: "E", lastname: "J" }
-];
+import pubsub from "../utils/pubsub.ts";
+import prisma from "../utils/prisma.ts";
 
 const resolvers = {
   Query: {
-    user: (_: any, args: { id: string; }) => users.find((u) => u.id === args.id),
-    users: () => users
+    user: (_: any, args: { id: string; }) => prisma.user.findUnique({
+      where: {
+        id: args.id
+      }
+    }),
+    users: () => prisma.user.findMany()
   },
 
   Mutation: {
-    createUser: (_: any, { input }: any) => {
-      const newUser = input;
-      users.push(newUser);
+    createUser: async (_: any, { input }: any) => {
+      const newUser = await prisma.user.create({
+        data: input
+      });
       pubsub.publish("USER_CREATED", { userCreated: newUser })
 
       return newUser;
     },
-    updateUser: (_: any, { input }: any) => {
+    updateUser: async (_: any, { input }: any) => {
       const { id, name, lastname } = input;
       try {
-        const userIndex = users.findIndex((u) => u.id === id);
-        if (userIndex > 0) {
-          users[userIndex] = {
-            id,
+        const updatedUser = await prisma.user.update({
+          where: {
+            id: id
+          },
+          data: {
             name,
             lastname
-          };
-        }
-        return users[userIndex]
+          }
+        });
+        
+        return updatedUser;
       } catch (e) {
         return null
       }
     },
-    deleteUser: (_: any, { id }: { id: string;}) => {
-      const index = users.findIndex((u) => u.id === id);
-      if (index > 0) {
-        users.splice(index, 1);
-        return true;
+    deleteUser: async (_: any, { id }: { id: string;}) => {
+      try {
+        const deletedUser = await prisma.user.delete({
+          where: {
+            id: id
+          }
+        });
+        return !!deletedUser;
+      } catch (e) {
+        throw new Error("Element not found");
       }
-      throw new Error("Element not found");
     }
   },
 
