@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { WebSocketServer } from "ws";
@@ -7,6 +8,9 @@ import { expressMiddleware } from "@as-integrations/express5";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { useServer } from "graphql-ws/use/ws";
 import schema from "./schema/index.ts";
+import config from "./config/index.ts";
+
+const { PORT } = config;
 
 async function startServer() {
   const app = express();
@@ -42,9 +46,9 @@ async function startServer() {
     expressMiddleware(apolloServer)
   );
 
-  httpServer.listen(4000, () => {
-    console.log("HTTP listening at http://localhost:4000");
-    console.log("Websockets listening at ws://localhost:4000");
+  httpServer.listen(PORT, () => {
+    console.log(`HTTP listening at http://localhost:${PORT}/graphql`);
+    console.log(`Websockets listening at ws://localhost:${PORT}/graphql`);
   });
 }
 
