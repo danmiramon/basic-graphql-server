@@ -6,6 +6,7 @@ import { createServer } from "http";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@as-integrations/express5";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import responseCachePlugin from "@apollo/server-plugin-response-cache";
 import { useServer } from "graphql-ws/use/ws";
 import schema from "./schema/index.ts";
 import config from "./config/index.ts";
@@ -25,7 +26,9 @@ async function startServer() {
   const apolloServer = new ApolloServer({
     schema,
     introspection: true,
+    cache: "bounded",
     plugins: [
+      responseCachePlugin(),
       ApolloServerPluginDrainHttpServer( { httpServer }),
       {
         async serverWillStart() {

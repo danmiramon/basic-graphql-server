@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@apollo/server": "^5.2.0",
+    "@apollo/server-plugin-response-cache": "^5.0.0",
     "@as-integrations/express5": "^1.1.2",
     "@graphql-tools/load-files": "^7.0.1",
     "@graphql-tools/merge": "^9.1.6",

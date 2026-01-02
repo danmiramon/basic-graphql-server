@@ -8,7 +8,11 @@ const resolvers = {
         id: args.id
       }
     }),
-    users: () => prisma.user.findMany()
+    users: () => {
+      // Just an example to check if caching is working
+      console.log(`Fetched at ${new Date().toISOString()}`);
+      return prisma.user.findMany();
+    }
   },
 
   Mutation: {

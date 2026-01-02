@@ -1,3 +1,13 @@
+directive @cacheControl(
+  maxAge: Int
+  scope: CacheControlScope
+) on FIELD_DEFINITION | OBJECT
+
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
 type User {
   id: ID!
   name: String!
@@ -6,7 +16,7 @@ type User {
 
 type Query {
   user(id: ID!): User!
-  users: [User]!
+  users: [User]! @cacheControl(maxAge: 60, scope: PUBLIC)
 }
 
 input CreateUser {
