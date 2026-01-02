@@ -8,6 +8,16 @@ enum CacheControlScope {
   PRIVATE
 }
 
+type PageInfo {
+  endCursor: String
+  hasNextPage: Boolean!
+}
+
+type UserConnection {
+  users: [User!]!
+  pageInfo: PageInfo!
+}
+
 type User {
   id: ID!
   name: String!
@@ -17,6 +27,7 @@ type User {
 type Query {
   user(id: ID!): User!
   users: [User]! @cacheControl(maxAge: 60, scope: PUBLIC)
+  paginatedUsers(take: Int, after: ID): UserConnection!
 }
 
 input CreateUser {

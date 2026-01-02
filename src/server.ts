@@ -8,13 +8,25 @@ import { expressMiddleware } from "@as-integrations/express5";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import responseCachePlugin from "@apollo/server-plugin-response-cache";
 import { useServer } from "graphql-ws/use/ws";
+import { rateLimit, ipKeyGenerator} from "express-rate-limit";
 import schema from "./schema/index.ts";
 import config from "./config/index.ts";
 
 const { PORT } = config;
 
+const limiter = rateLimit ({
+  windowMs: 10_000, // 10 seconds
+  max: 5, // max request per IP
+  keyGenerator: (req) => {
+    const ip = ipKeyGenerator(req.ip || "");
+    return req.headers["x-user-id"] as string || ip // fallback to IP
+  }
+});
+
 async function startServer() {
   const app = express();
+  app.set("trust proxy", 1);
+  app.use(limiter); // DISABLE TO REMOVE THE LIMITER FOR TESTING PURPOSES
   const httpServer = createServer(app);
 
   const wsServer = new WebSocketServer({

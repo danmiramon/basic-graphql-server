@@ -12,6 +12,23 @@ const resolvers = {
       // Just an example to check if caching is working
       console.log(`Fetched at ${new Date().toISOString()}`);
       return prisma.user.findMany();
+    },
+    paginatedUsers: async (_: any, { take = 5, after }: { take: number; after: string; }) => {
+      const users = await prisma.user.findMany({
+        take,
+        skip: after ? 1 : 0,
+        ...(after && { cursor: { id: after }}),
+        orderBy: { id: "asc" }
+      });
+      const lastUser = users[users.length - 1];
+
+      return {
+        users,
+        pageInfo: {
+          endCursor: lastUser?.id || null,
+          hasNextPage: users.length === take // keep it simple for example purposes
+        }
+      }
     }
   },
 
@@ -42,7 +59,7 @@ const resolvers = {
         return null
       }
     },
-    deleteUser: async (_: any, { id }: { id: string;}) => {
+    deleteUser: async (_: any, { id }: { id: string; }) => {
       try {
         const deletedUser = await prisma.user.delete({
           where: {
