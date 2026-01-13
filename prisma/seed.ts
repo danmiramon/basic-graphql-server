@@ -3,9 +3,9 @@ import prisma from "../src/utils/prisma.ts";
 async function main() {
   await prisma.user.createMany({
     data: [
-      { name: "Daniel", lastname: "Miramontes" },
-      { name: "Pamela", lastname: "Rubio" },
-      { name: "Ernesto", lastname: "Buendia" }
+      { name: "John", lastname: "Smith" },
+      { name: "Jane", lastname: "Doe" },
+      { name: "Ernie", lastname: "Gooday" }
     ]
   });
 
